@@ -12,7 +12,7 @@ namespace TgBot1
         public string token { get; set; }
         public async Task ReadJson()
         {
-            using (StreamReader sr = new StreamReader(path: "giveawaybot/data/config.json"))
+            using (StreamReader sr = new StreamReader(path: "data/config.json"))
             {
                 string json = sr.ReadToEnd();
                 jsonStructure jsonStructure = Newtonsoft.Json.JsonConvert.DeserializeObject<jsonStructure>(json);

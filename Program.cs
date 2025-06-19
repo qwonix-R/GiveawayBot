@@ -1108,7 +1108,7 @@ namespace TgBot1
             ITelegramBotClient bot = new TelegramBotClient(token);
 
             Console.WriteLine("Запущен бот " + bot.GetMe().Result.FirstName);
-
+            //Console.Out.Flush();
 
             var cts = new CancellationTokenSource();
             var cancellationToken = cts.Token;
@@ -1125,7 +1125,8 @@ namespace TgBot1
                 receiverOptions,
                 cancellationToken
             );
-            Console.ReadLine();
+            while (true) { await Task.Delay(1000); }
+            //Console.ReadLine();
 
         }
     }
