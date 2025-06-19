@@ -1,0 +1,1 @@
+docker run -it --rm -v $(pwd)/assets:/giveawaybot/assets -v $(pwd)/data:/giveawaybot/data -e TZ=Europe/Moscow giveaway-bot
