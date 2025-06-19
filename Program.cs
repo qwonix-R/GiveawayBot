@@ -524,6 +524,16 @@ namespace TgBot1
                                                                 return;
                                                             }
 
+                                                        case UserState.InstaGiveawayId:
+                                                            {
+                                                                await PostCommands.ChooseInstaGiveawayId(chat.Id, botClient, text);
+                                                                return;
+                                                            }
+                                                        case UserState.ConfirmInstaGiveaway:
+                                                            {
+                                                                await PostCommands.ConfirmInstaGiveaway(chat.Id, botClient, text);
+                                                                return;
+                                                            }
 
                                                     }
 
