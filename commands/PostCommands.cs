@@ -1546,7 +1546,7 @@ namespace TgBot1.commands
                 {
                     _stateRepository.FillInstaGiveawayId(chatId, postId);
                     Console.WriteLine($"айди завершаемого розыгрыша: {postId}");
-                    _stateRepository.UpdateUserState(chatId, UserState.ConfirmInstaPost);
+                    _stateRepository.UpdateUserState(chatId, UserState.ConfirmInstaGiveaway);
 
 #pragma warning disable CS8600
                     Post post = await db.PostDbSet.Where(p => p.PostId == postId).FirstOrDefaultAsync();
