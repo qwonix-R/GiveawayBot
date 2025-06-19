@@ -254,7 +254,7 @@ namespace TgBot1
                                                                         }
                                                                     case "/завершить":
                                                                         {
-                                                                            
+                                                                            await PostCommands.StartInstaGiveaway(user.Id, botClient);
 
                                                                             return;
                                                                         }
