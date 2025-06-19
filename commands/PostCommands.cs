@@ -1426,29 +1426,31 @@ namespace TgBot1.commands
             int count = db.GiveawayParticipants.Count(p => p.GiveawayId == postId);
             var rand = new Random();
             List<GiveawayParticipant> randomRecords = new List<GiveawayParticipant>();
-
             bool AreWinners = true;
             if (count <= winnersCount && count > 0)
             {
                 randomRecords = db.GiveawayParticipants
                     .Where(x => x.GiveawayId == postId)
-                    .OrderBy(x => EF.Functions.Random())
-                    .Take(count) // количество случайных записей
+                    .AsEnumerable() // Переводим в память
+                    .OrderBy(x => rand.Next()) // Используем локальный Random
+                    .Take(count)
                     .ToList();
             }
             else if (count > 0)
             {
                 randomRecords = db.GiveawayParticipants
                     .Where(x => x.GiveawayId == postId)
-                    .OrderBy(x => EF.Functions.Random())
-                    .Take(winnersCount) // количество случайных записей
+                    .AsEnumerable() // Переводим в память
+                    .OrderBy(x => rand.Next()) // Используем локальный Random
+                    .Take(winnersCount)
                     .ToList();
             }
             else
             {
                 AreWinners = false;
             }
-            List<string> winnerUsernames = new List<string>();
+	    
+            List<string> winnerUsernames = new List<string>();      
             int i = 0;
             List<long> winnerUserIds = new List<long>();
             foreach (GiveawayParticipant winner in randomRecords)
@@ -1469,6 +1471,7 @@ namespace TgBot1.commands
 
             await db.SaveChangesAsync();
             //await db.DisposeAsync();
+	         
         }
         public static async Task PostResults(GiveawayContext db, ITelegramBotClient botClient, int postId, List<string> winnerUsernames, int participants, bool AreWinners)
         {
@@ -1573,26 +1576,33 @@ namespace TgBot1.commands
         {
             if (message.ToLower() == "нет" || message.ToLower() == "да")
             {
-                var db = new PostContext();
-                int postId = _stateRepository.GetInstaGiveawayId(chatId);
-                Post post = await db.PostDbSet.Where(p => p.PostId == postId).FirstOrDefaultAsync();
-
-                if (message.ToLower() == "да")
+                try
                 {
-                    await GiveawayWinners(postId, post.Winners, botClient);
-                    post.IsEnded = 1;
-                    await db.SaveChangesAsync();
-                    await botClient.SendMessage(chatId, $"Пост id{postId} успешно отправлен!");
+                    var db = new PostContext();
+                    int postId = _stateRepository.GetInstaGiveawayId(chatId);
+                    Post post = await db.PostDbSet.Where(p => p.PostId == postId).FirstOrDefaultAsync();
+
+                    if (message.ToLower() == "да")
+                    {
+                        await GiveawayWinners(postId, post.Winners, botClient);
+                        post.IsEnded = 1;
+                        await db.SaveChangesAsync();
+                        await botClient.SendMessage(chatId, $"Пост id{postId} успешно отправлен!");
+                    }
+                    else
+                    {
+                        _stateRepository.FillInstaGiveawayId(chatId, 0);
+                        await botClient.SendMessage(chatId, $"Отправка поста отменена!");
+                    }
+
+                    _stateRepository.UpdateUserState(chatId, UserState.PostMenu);
+
+                    await db.DisposeAsync();
                 }
-                else
+                catch (Exception ex)
                 {
-                    _stateRepository.FillInstaGiveawayId(chatId, 0);
-                    await botClient.SendMessage(chatId, $"Отправка поста отменена!");
+                    Console.WriteLine(ex.ToString());   
                 }
-
-                _stateRepository.UpdateUserState(chatId, UserState.PostMenu);
-
-                await db.DisposeAsync();
 
             }
             else { await botClient.SendMessage(chatId, $"Подтвердить изменения? Да/Нет"); }
