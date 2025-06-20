@@ -34,7 +34,7 @@ COPY data/broads.db /giveawaybot/data/
 # Копируем файл config.json
 COPY data/config.json /giveawaybot/data/
 
-# Указываем том для данных (VOLUME можно смонтировать при запуске)
+# Указываем томы для данных
 VOLUME /giveawaybot/assets
 VOLUME /giveawaybot/data
 
